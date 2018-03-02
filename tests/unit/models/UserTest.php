@@ -31,14 +31,19 @@ class UserTest extends \Codeception\Test\Unit
     /**
      * @depends testFindUserByUsername
      */
-    public function testValidateUser($user)
+	
+	public function testValidateUser()
     {
-        $user = User::findByUsername('admin');
-        expect_that($user->validateAuthKey('test100key'));
-        expect_not($user->validateAuthKey('test102key'));
+        $user = User::create();
 
-        expect_that($user->validatePassword('admin'));
-        expect_not($user->validatePassword('123456'));        
+        $user->username = null;
+        $this->assertFalse($user->validate(['username']));
+
+        $user->username = 'toolooooongnaaaaaaameeeetoolooooongnaaaaaaameeee';
+        $this->assertFalse($user->validate(['username']));
+
+        $user->username = 'davert';
+        $this->assertTrue($user->validate(['username']));
     }
 
 }

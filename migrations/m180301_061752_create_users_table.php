@@ -19,6 +19,10 @@ class m180301_061752_create_users_table extends Migration
 			'date_create' => Schema::TYPE_DATETIME . ' NOT NULL DEFAULT CURRENT_TIMESTAMP' ,
 			'UNIQUE (nickname)'
         ], 'DEFAULT CHARSET=utf8');
+		
+		$this->insert('users', [
+            'nickname' => 'test1'
+        ]);
     }
 
     /**
@@ -26,6 +30,7 @@ class m180301_061752_create_users_table extends Migration
      */
     public function safeDown()
     {
+		$this->delete('users', ['id' => 1]);
 		echo "m180301_061752_create_users_table cannot be reverted.\n";
 		return false;
     }
