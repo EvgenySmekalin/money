@@ -36,24 +36,29 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            
+	$items = [
 			Yii::$app->user->isGuest ? (
                 ['label' => 'Login / Sign in', 'url' => ['/site/login']]
             ) : (
                 '<li>'
                 . Html::beginForm(['/site/logout'], 'post')
                 . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
+                    'Logout (' . Yii::$app->user->identity->nickname . ')',
                     ['class' => 'btn btn-link logout']
                 )
                 . Html::endForm()
                 . '</li>'
             )
-        ],
+	];
+	if (!Yii::$app->user->isGuest) {
+		array_unshift($items, ['label' => 'Transactions', 'url' => ['/site/transactions']]);
+	}
+	array_unshift($items, ['label' => 'Home', 'url' => ['/site/index']]);
+	
+	
+    echo Nav::widget([
+        'options' => ['class' => 'navbar-nav navbar-right'],
+        'items' => $items,
     ]);
     NavBar::end();
     ?>

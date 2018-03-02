@@ -9,7 +9,9 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
-use app\models\MoneyUser;
+use app\models\User;
+use app\models\UserTransaction;
+use yii\data\ActiveDataProvider;
 
 class SiteController extends Controller
 {
@@ -21,10 +23,10 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'only' => ['logout', 'transactions'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'transactions'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -48,10 +50,6 @@ class SiteController extends Controller
             'error' => [
                 'class' => 'yii\web\ErrorAction',
             ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
-            ],
         ];
     }
 
@@ -62,7 +60,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-		$searchModel = new MoneyUser();
+		$searchModel = new User(/*['scenario' => User::SCENARIO_SEARCH]*/);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 		
         return $this->render('index', ['dataProvider' => $dataProvider, 'searchModel' => $searchModel]);
@@ -84,7 +82,6 @@ class SiteController extends Controller
             return $this->goBack();
         }
 
-        $model->password = '';
         return $this->render('login', [
             'model' => $model,
         ]);
@@ -101,32 +98,30 @@ class SiteController extends Controller
 
         return $this->goHome();
     }
-
-    /**
-     * Displays contact page.
+	
+	/**
+     * Transactions action.
      *
-     * @return Response|string
+     * @return Response
      */
-    public function actionContact()
+	public function actionTransactions()
     {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
+		$userModel = User::findOne(Yii::$app->user->id);
+		$userTransaction = new UserTransaction();
 
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
+		if (Yii::$app->request->post('transaction-button') && $userTransaction->load(Yii::$app->request->post()) && $userTransaction->sendAmount($userModel)) {
+			$userTransaction->amount           = null;
+			$userTransaction->receiverNickname = null;
+		}
+		
+        $dataProvider = new ActiveDataProvider([
+            'query' => UserTransaction::find()->where(['sender_id' => $userModel->id])->orderBy(['date' => SORT_DESC]),
+            'pagination' => [
+                'pageSize' => 20,
+            ]
         ]);
-    }
+		
 
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
+        return $this->render('transactions', ['userTransaction' => $userTransaction, 'userModel' => $userModel, 'dataProvider' => $dataProvider]);
     }
 }

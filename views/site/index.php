@@ -2,14 +2,6 @@
 use yii\grid\GridView;
 $this->title = 'Balance';
 ?>
-<style>
-    table tbody tr > td:last-child {
-        text-align: right;
-    }
-
-	
-</style>
-
 <div class="body-content">
     <div class="row">
         <div class="col-lg-12">
@@ -25,6 +17,9 @@ $this->title = 'Balance';
                     [
                         'label' => 'Balance',
                         'attribute' => 'balance',
+						'contentOptions' => [
+							'style' => 'text-align: right;'
+						]
                     ],
 
                 ],
