@@ -120,8 +120,11 @@ class SiteController extends Controller
                 'pageSize' => 20,
             ]
         ]);
-		
 
-        return $this->render('transactions', ['userTransaction' => $userTransaction, 'userModel' => $userModel, 'dataProvider' => $dataProvider]);
+        return $this->render('transactions', [
+			'userTransaction' => $userTransaction, 
+			'userModel'       => $userModel, 
+			'dataProvider'    => $dataProvider
+		]);
     }
 }

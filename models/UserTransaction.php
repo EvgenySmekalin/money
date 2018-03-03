@@ -14,10 +14,10 @@ class UserTransaction extends ActiveRecord
     public function rules()
     {
         return [
-            [['sender_id', 'receiver_id', 'amount'], 'required'],
-			['amount', 'number'],
-			['receiverNickname', 'string', 'max' => 40],
-			['receiverNickname', 'trim'],
+            [['sender_id', 'receiver_id', 'amount', 'receiverNickname'], 'required'],
+			[['amount'], 'number', 'min' => 0.01],
+			[['receiverNickname'], 'string', 'max' => 40],
+			[['receiverNickname'], 'trim'],
             [['sender_id', 'receiver_id', 'amount', 'receiverNickname'], 'safe'],
         ];
     }
@@ -29,14 +29,18 @@ class UserTransaction extends ActiveRecord
 	
 	public function sendAmount(User $user) 
 	{
+		if (!$this->validate(['receiverNickname', 'amount'])) {
+			return false;
+		}
+			
 		if ($user->nickname === $this->receiverNickname) {
 			$this->addError('receiverNickname', "Sending any amount to yourself is forbidden.");
-			return;
+			return false;
 		}
 		
 		if (($user->balance - $this->amount) < -1000) {
-			$this->addError('amount', "You can't have balance less then -1000. Chose different amount.");
-			return;
+			$this->addError('amount', 'You can not have balance less then -1000. Chose different amount.');
+			return false;
 		}
 		
 		$receiver = User::findOrCreateByNickname($this->receiverNickname);

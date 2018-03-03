@@ -2,6 +2,12 @@
 use yii\grid\GridView;
 $this->title = 'Balance';
 ?>
+<style>
+    table thead th{
+        text-align: center;
+    }
+</style>
+
 <div class="body-content">
     <div class="row">
         <div class="col-lg-12">
@@ -21,11 +27,8 @@ $this->title = 'Balance';
 							'style' => 'text-align: right;'
 						]
                     ],
-
                 ],
             ]); ?>
-
-
         </div>
     </div>
 </div>

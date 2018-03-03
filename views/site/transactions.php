@@ -23,8 +23,7 @@ $this->title = 'Transactions';
     <h1><?= $userModel->nickname ?>'s&nbsp;<?= Html::encode($this->title) ?></h1>
 	
 	<h3>Balance: <?= $userModel->balance ?></h3>
-	
-	
+
 	<?php $form = ActiveForm::begin([
         'id' => 'transaction-form',
         'layout' => 'horizontal',
@@ -79,12 +78,8 @@ $this->title = 'Transactions';
 							'style' => 'text-align: center;'
 						]
                     ],
-					
                 ],
             ]); ?>
-
-
         </div>
     </div>
-	
 </div>

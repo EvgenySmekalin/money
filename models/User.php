@@ -17,8 +17,8 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
     public function rules()
     {
         return [
-            ['balance',  'number'],	
-			['nickname', 'trim'],
+            [['balance'],  'number'],	
+			[['nickname'], 'trim'],
         ];
     }
 	

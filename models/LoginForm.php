@@ -26,11 +26,11 @@ class LoginForm extends Model
     {
         return [
             // nickname is required
-            ['nickname', 'required'],
-			['nickname', 'trim'],
-			['nickname', 'string', 'max' => 40],
+            [['nickname'], 'required'],
+			[['nickname'], 'trim'],
+			[['nickname'], 'string', 'max' => 40],
             // rememberMe must be a boolean value
-            ['rememberMe', 'boolean'],
+            [['rememberMe'], 'boolean'],
         ];
     }
 
