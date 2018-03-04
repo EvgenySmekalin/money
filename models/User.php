@@ -6,28 +6,32 @@ use yii\data\ActiveDataProvider;
 
 class User extends ActiveRecord implements \yii\web\IdentityInterface
 {
-	const SCENARIO_LOGIN  = 'login';
     const SCENARIO_SEARCH = 'search';
+    const SCENARIO_LOGIN  = 'login';
 	
     public static function tableName()
     {
         return 'users';
     }
+	
+	public function scenarios()
+    {
+	    $scenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_SEARCH] = ['nickname', 'balance'];
+        $scenarios[self::SCENARIO_LOGIN]  = ['nickname', 'balance'];
+        return $scenarios;
+    }
+
 
     public function rules()
     {
         return [
-            [['balance'],  'number'],	
-			[['nickname'], 'trim'],
+		    [['nickname'], 'required',               'on' => self::SCENARIO_LOGIN],	
+            [['balance'],  'number', 'min' => -1000, 'on' => self::SCENARIO_LOGIN],	
+            [['nickname'], 'string', 'max' => 40,    'on' => self::SCENARIO_LOGIN],	
+            [['balance'],  'number', 'on' => self::SCENARIO_SEARCH],	
+			[['nickname', 'balance'], 'trim'],
         ];
-    }
-	
-    public function scenarios()
-    {
-		$scenarios = parent::scenarios();
-        $scenarios[self::SCENARIO_LOGIN]  = ['nickname'];
-        $scenarios[self::SCENARIO_SEARCH] = ['nickname', 'balance'];
-        return $scenarios;
     }
 	
 	public function transactions()
@@ -64,7 +68,8 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
             return $dataProvider;
         }
 		
-		$query->filterWhere(['like', 'nickname', $this->nickname])->andfilterWhere(['like','balance', $this->balance]);
+		$query->filterWhere(['like', 'nickname', $this->nickname])
+			  ->andfilterWhere(['like','balance', $this->balance]);
 
         return $dataProvider;
     }
@@ -75,6 +80,7 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
 		if (!$user) {
 			$user = new User(['scenario' => User::SCENARIO_LOGIN]);
 			$user->nickname = $nickname;
+			$user->balance = 0;
 			$user->save();
 		}
 		
@@ -144,9 +150,6 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function validateAuthKey($authKey)
-    {
-        //return $this->authKey === $authKey;
-    }
+    public function validateAuthKey($authKey) { }
 
 }

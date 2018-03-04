@@ -60,7 +60,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-		$searchModel = new User(/*['scenario' => User::SCENARIO_SEARCH]*/);
+		$searchModel = new User(['scenario' => User::SCENARIO_SEARCH]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 		
         return $this->render('index', ['dataProvider' => $dataProvider, 'searchModel' => $searchModel]);
